@@ -9,6 +9,8 @@ Add JavaScript logic to detect birthdays within 3 days, completed 8/4
 
 Show upcoming birthdays separately on the page, completed 8/4
 
+Add in notes where difference is shown, "Next birthday is in x days" - completed 8/5
+
 Add a button to create Google Calendar reminders manually
 
 Style with basic CSS
