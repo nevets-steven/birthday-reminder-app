@@ -30,7 +30,10 @@
      "birthday":"04/12/1995",
      "notes": ""},
     {"name":"TEST",
-     "birthday":"08/06/1995",
+     "birthday":"08/08/1995",
+     "notes":""},
+     {"name":"Amanda",
+     "birthday":"03/04/1988",
      "notes":""}
     
 ]
