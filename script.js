@@ -161,9 +161,30 @@ function getNextDay(date, nextDay = new Date(date)){
 }
 function sendToGoogleCalendar(friend){
     const event = createGoogleEvent(friend);
-    console.log(event);
+    console.log('Prepared event:', event);
 
     //add API call here to post into calendar
+
+    fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(event)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Event Created', data);
+        alert('Event successfully placed into your calendar')
+    })
+    .catch(error => {
+        console.error('Error creating event: ', error);
+        alert('Failed to add event to calendar');
+    });
 }
 
 module.exports = {
