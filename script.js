@@ -1,10 +1,10 @@
 let tokenClient;
 let accessToken;
-let selectedFriend; // for google event, might change to array to handle multiple birthdays within 3 days
+let selectedFriend;
+// for google event, might change to array to handle multiple birthdays within 3 days
 window.onload = () => {
   initGoogleAuth();
 };
-
 
 function getNextBirthday(friend, today = new Date()){
     today.setHours(0,0,0,0);
@@ -114,12 +114,16 @@ function getJSONData(){
         .catch(error => console.error('Error with data', error));
 
 }
-getJSONData();
 
+window.addEventListener('DOMContentLoaded', () => {
+    getJSONData();
+    document.getElementById('addToCalendar').addEventListener('click', () => {
+        tokenClient.requestAccessToken();
+    });
+});
 
-document.getElementById('addToCalendar').addEventListener('click', () => {
-    tokenClient.requestAccessToken();
-})
+//unit testing safe code above
+
 
 //setting up google authentication, sign in window
 function initGoogleAuth() {
@@ -164,7 +168,7 @@ function sendToGoogleCalendar(friend){
 
 module.exports = {
     getNextBirthday,
-    setHTML,
     getNextDay
 }
+
 
