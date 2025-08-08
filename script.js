@@ -43,7 +43,14 @@ function setHTML(friend, today = new Date()){
         const difference = Math.ceil((friend.friendNextBirthday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
         if (difference >= 0 && difference <= 3){
-            selectedFriend = friend;
+            if (typeof accessToken !== 'undefined'){
+                sendToGoogleCalendar(friend);
+            }
+            else{
+                selectedFriend = friend;
+                tokenClient.requestAccessToken();
+
+            }
             switch (difference){
                 case 0:
                     friendBirthday.innerHTML +=
@@ -134,7 +141,9 @@ function initGoogleAuth() {
       accessToken = tokenResponse.access_token;
       console.log('Access token granted:', accessToken);
       // Proceed to send event
-      sendToGoogleCalendar(selectedFriend); 
+      if (selectedFriend){
+          sendToGoogleCalendar(selectedFriend); 
+      }
     },
   });
 }
