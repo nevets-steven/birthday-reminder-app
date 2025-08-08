@@ -6,8 +6,7 @@ window.onload = () => {
 };
 
 
-function getNextBirthday(friend){
-    const today = new Date (2026, 3, 10);
+function getNextBirthday(friend, today = new Date()){
     today.setHours(0,0,0,0);
     const currentYear = today.getFullYear();
     const [month,day] = friend.birthday.split('/');
@@ -30,7 +29,7 @@ function mapFriend(data){
 
     return friendNextBirthday;
 }
-function setHTML(friend){
+function setHTML(friend, today = new Date()){
     //for placing HTML onto page
 
     const friendBirthday = document.getElementById('friendBirthday');
@@ -39,7 +38,6 @@ function setHTML(friend){
     const mappedFriends = mapFriend(friend);
 
     for (const friend of mappedFriends){
-        const today = new Date (2026, 3, 10);
         today.setHours(0,0,0,0);
 
         const difference = Math.ceil((friend.friendNextBirthday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -153,8 +151,7 @@ function createGoogleEvent(friend){
     return event;
 }
     
-function getNextDay(date){
-    const nextDay = new Date(date);
+function getNextDay(date, nextDay = new Date(date)){
     nextDay.setDate(nextDay.getDate() + 1);
     return nextDay.toISOString().split('T')[0];
 }
@@ -163,5 +160,11 @@ function sendToGoogleCalendar(friend){
     console.log(event);
 
     //add API call here to post into calendar
+}
+
+module.exports = {
+    getNextBirthday,
+    setHTML,
+    getNextDay
 }
 

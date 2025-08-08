@@ -1,0 +1,23 @@
+{
+  "name": "birthday-reminder-app",
+  "version": "1.0.0",
+  "description": "MVP Timeline",
+  "main": "script.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nevets-steven/birthday-reminder-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nevets-steven/birthday-reminder-app/issues"
+  },
+  "homepage": "https://github.com/nevets-steven/birthday-reminder-app#readme",
+  "dependencies": {
+    "jest": "^30.0.5"
+  }
+}
