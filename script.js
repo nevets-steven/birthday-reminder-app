@@ -11,13 +11,13 @@ function getNextBirthday(friend, today = new Date()){
     const currentYear = today.getFullYear();
     const [month,day] = friend.birthday.split('/');
 
-    const birthDate = new Date(currentYear, month - 1, day);
-    birthDate.setHours(0,0,0,0); //redundant but in case i change dates later on.
-    if (birthDate < today){
-        birthDate.setFullYear(currentYear + 1);
+    const nextBirthday = new Date(currentYear, month - 1, day);
+    nextBirthday.setHours(0,0,0,0); //redundant but in case i change dates later on.
+    if (nextBirthday < today){
+        nextBirthday.setFullYear(currentYear + 1);
     }
 
-    return birthDate;
+    return nextBirthday;
 }
 function mapFriend(data){
     const friendNextBirthday = data.map(friend => ({
@@ -153,12 +153,10 @@ function createGoogleEvent(friend){
             summary: `Birthday reminder: ${friend.name}`,
             description: friend.notes || "Don't forget to wish them a happy birthday!",
             start: {
-                date: friend.friendNextBirthday.toISOString().split('T')[0],
-                timeZone: "America/New_York"
+                date: friend.friendNextBirthday.toISOString().split('T')[0]
             },
             end: {
-                date: getNextDay(friend.friendNextBirthday),
-                timeZone: "America/New_York"
+                date: getNextDay(friend.friendNextBirthday)
         }
     }
     return event;
@@ -174,40 +172,41 @@ async function sendToGoogleCalendar(friend){
 
     //add API call here to post into calendar
     //no dupes allowed
-
+    console.log('Payload:', JSON.stringify(event, null, 2));
+    console.log('eventId: ', eventId)
     const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         },
+        // body: JSON.stringify(event)
         body: JSON.stringify({...event, id: eventId})       
-        });   
-    }
+        });
+    console.log('Response status:', res.status);
     if (res.status === 409){
         console.log(`Skipped: duplciate event (${eventId}) already exists.`);
+        return;
     }
     if (!res.ok){
         const txt = await res.text().catch(() => '');
         throw new Error(`Calendar insert failed ${res.status} ${txt}`);
     }
     const data = await res.json();
-    console.log('Event created: ', data.htmlLink || data.id);
 
-function slug(name){
-    return String(name).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '_');
+
+    console.log('Event created: ', data.htmlLink || data.id);
 }
 
-function buildEventId(friend){
-    const y = friend.friendNextBirthday.getFullYear();
-    let id = `bday_${slug(friend.name)}_${y}`;
-    if (id.length < 5){
-        id = id.padEnd(5, '_');
-    }
-    if (id.length > 1024){
-        id = id.slice(0, 1024);
-    }
-    return id;
+async function buildEventId(friend){
+    const iso = friend.friendNextBirthday.toISOString().slice(0, 10)
+    const key = `${friend.name.toLowerCase()}|${iso}`;
+    const bytes = new TextEncoder().encode(key);
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    const hex = Array.from(new Uint8Array(digest))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    return hex.slice(0,30);
 }
 module.exports = {
     getNextBirthday,
