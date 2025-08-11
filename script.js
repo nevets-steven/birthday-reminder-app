@@ -168,34 +168,47 @@ function getNextDay(date, nextDay = new Date(date)){
     nextDay.setDate(nextDay.getDate() + 1);
     return nextDay.toISOString().split('T')[0];
 }
-function sendToGoogleCalendar(friend){
+async function sendToGoogleCalendar(friend){
     const event = createGoogleEvent(friend);
-    console.log('Prepared event:', event);
+    const eventId = buildEventId(friend);
 
     //add API call here to post into calendar
+    //no dupes allowed
 
-    fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-        method: "POST",
+    const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+        method: 'POST',
         headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'content-type': 'application/json'
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify(event)
-    })
-    .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return response.json();
-    })
-    .then(data => {
-        console.log('Event Created', data);
-        alert('Event successfully placed into your calendar')
-    })
-    .catch(error => {
-        console.error('Error creating event: ', error);
-        alert('Failed to add event to calendar');
-    });
+        body: JSON.stringify({...event, id: eventId})       
+        });   
+    }
+    if (res.status === 409){
+        console.log(`Skipped: duplciate event (${eventId}) already exists.`);
+    }
+    if (!res.ok){
+        const txt = await res.text().catch(() => '');
+        throw new Error(`Calendar insert failed ${res.status} ${txt}`);
+    }
+    const data = await res.json();
+    console.log('Event created: ', data.htmlLink || data.id);
+
+function slug(name){
+    return String(name).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '_');
 }
 
+function buildEventId(friend){
+    const y = friend.friendNextBirthday.getFullYear();
+    let id = `bday_${slug(friend.name)}_${y}`;
+    if (id.length < 5){
+        id = id.padEnd(5, '_');
+    }
+    if (id.length > 1024){
+        id = id.slice(0, 1024);
+    }
+    return id;
+}
 module.exports = {
     getNextBirthday,
     getNextDay
