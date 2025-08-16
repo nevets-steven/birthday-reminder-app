@@ -94,6 +94,7 @@ function setHTML(friend, today = new Date()){
                     <li>Birthday: ${friend.friendNextBirthday.toDateString()}</li>
                     <li>Notes: Their birthday is in ${difference} day(s)!</li>
                 </ul>`;
+            friendBirthday.innerHTML = 'There are no birthdays within 3 days of today.';
         }
 
     }

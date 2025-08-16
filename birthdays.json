@@ -29,14 +29,8 @@
     {"name":"Jaz",
      "birthday":"04/12/1995",
      "notes": ""},
-    {"name":"TEST",
-     "birthday":"08/08/1995",
-     "notes":""},
      {"name":"Amanda",
      "birthday":"03/04/1988",
-     "notes":""},
-     {"name": "TEST2",
-    "birthday": "08/12/2025",
-    "notes": ""}
+     "notes":""}
     
 ]
